@@ -767,6 +767,32 @@ public class Database implements DatabaseInterface {
 		return null;
 	}
 
+	public ArrayList<User> getBlockedUsers(int userId) {
+		ArrayList<User> blockedUsers = new ArrayList<User>();
+		try {
+			FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Blocked b;
+			while (true) {
+				try {
+					b = (Blocked) in.readObject();
+					if (b.getBlockerId() == userId) {
+						blockedUsers.add(this.getUser(b.getBlockedId()));
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return blockedUsers;
+	}
+
 	public void deleteBlocked(int id) {
 		try {
 			FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);

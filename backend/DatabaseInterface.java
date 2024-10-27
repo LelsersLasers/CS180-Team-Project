@@ -35,7 +35,7 @@ public interface DatabaseInterface {
 
 	public void saveBlocked(Blocked blocked);
 	public Blocked getBlocked(int id);
-	// public ArrayList<User> getBlockedUsers(int userId);
+	public ArrayList<User> getBlockedUsers(int userId);
 	public void deleteBlocked(int id);
 
 	// public void savePostVote(PostVote postVote);
