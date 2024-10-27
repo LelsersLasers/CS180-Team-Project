@@ -1,5 +1,7 @@
 package backend;
 
+import java.util.ArrayList; 
+
 public interface DatabaseInterface {
 	public final static String USERS_FILE = "database/users";
 	public final static String POSTS_FILE = "database/posts";
@@ -15,4 +17,9 @@ public interface DatabaseInterface {
 	public User getUser(String username);
 	public User tryLogin(String username, String password);
 
+	public void savePost(Post post);
+	public Post getPost(int id);
+	public ArrayList<Post> getPosts(int userId);
+	public ArrayList<Post> getFeed(int userId);
+	public void deletePost(int id);
 }
