@@ -353,4 +353,162 @@ public class Database implements DatabaseInterface {
 		// TODO: will implement once post votes are implemented
 	}
 
+	public void saveComment(Comment comment) {
+		try {
+			if (comment.getId() == -1) {
+				// Read first entry which is the next id
+				FileInputStream fileIn = new FileInputStream(COMMENTS_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				int nextId = in.readInt();
+				in.close();
+
+				// update the comment
+				comment.setId(nextId);
+
+				// write the incremented id back to the file
+				FileOutputStream fileOut = new FileOutputStream(COMMENTS_FILE);
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out.writeInt(nextId + 1);
+				out.close();
+
+				// append the comment to the file
+				fileOut = new FileOutputStream(COMMENTS_FILE, true);
+				out = new ObjectOutputStream(fileOut);
+				out.writeObject(comment);
+				out.close();
+
+				return;
+			}
+
+			// Have to check if the comment already exists
+			boolean commentExists = this.getComment(comment.getId()) != null;
+			if (commentExists) {
+				// Update the comment
+				FileInputStream fileIn = new FileInputStream(COMMENTS_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+
+				FileOutputStream fileOut = new FileOutputStream(COMMENTS_FILE + ".tmp");
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+				Comment c;
+				while (true) {
+					try {
+						c = (Comment) in.readObject();
+						if (c.getId() == comment.getId()) {
+							c = comment;
+						}
+						out.writeObject(c);
+					} catch (EOFException e) {
+						break;
+					}
+				}
+
+				in.close();
+				out.close();
+
+				// Replace the old file with the new one
+				File oldFile = new File(COMMENTS_FILE);
+				File newFile = new File(COMMENTS_FILE + ".tmp");
+				oldFile.delete();
+				newFile.renameTo(oldFile);
+				return;
+			}
+
+			// Append the comment to the file
+			FileOutputStream fileOut = new FileOutputStream(COMMENTS_FILE, true);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(comment);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Comment getComment(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(COMMENTS_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Comment c;
+			while (true) {
+				try {
+					c = (Comment) in.readObject();
+					if (c.getId() == id) {
+						in.close();
+						return c;
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public ArrayList<Comment> getComments(int postId) {
+		ArrayList<Comment> comments = new ArrayList<Comment>();
+		try {
+			FileInputStream fileIn = new FileInputStream(COMMENTS_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Comment c;
+			while (true) {
+				try {
+					c = (Comment) in.readObject();
+					if (c.getPostId() == postId) {
+						comments.add(c);
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return comments;
+	}
+
+	public void deleteComment(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(COMMENTS_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			FileOutputStream fileOut = new FileOutputStream(COMMENTS_FILE + ".tmp");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+			Comment c;
+			while (true) {
+				try {
+					c = (Comment) in.readObject();
+					if (c.getId() != id) {
+						out.writeObject(c);
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+			out.close();
+
+			// Replace the old file with the new one
+			File oldFile = new File(COMMENTS_FILE);
+			File newFile = new File(COMMENTS_FILE + ".tmp");
+			oldFile.delete();
+			newFile.renameTo(oldFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Also delete associated comment votes
+		// TODO: will implement once comment votes are implemented
+	}
 }
