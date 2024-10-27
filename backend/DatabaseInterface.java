@@ -22,4 +22,29 @@ public interface DatabaseInterface {
 	public ArrayList<Post> getPosts(int userId);
 	public ArrayList<Post> getFeed(int userId);
 	public void deletePost(int id);
+
+	public void saveComment(Comment comment);
+	public Comment getComment(int id);
+	public ArrayList<Comment> getComments(int postId);
+	public void deleteComment(int id);
+
+	public void saveFriendship(Friendship friendship);
+	public Friendship getFriendship(int id);
+	public ArrayList<User> getFriends(int userId);
+	public void deleteFriendship(int id);
+
+	public void saveBlocked(Blocked blocked);
+	public Blocked getBlocked(int id);
+	// public ArrayList<User> getBlockedUsers(int userId);
+	public void deleteBlocked(int id);
+
+	// public void savePostVote(PostVote postVote);
+	// public PostVote[] getPostVotes(int postId);
+	// public int getPostScore(int postId);
+	// public void deletePostVote(int postId, int userId);
+
+	// public void saveCommentVote(CommentVote commentVote);
+	// public CommentVote[] getCommentVotes(int commentId);
+	// public int getCommentScore(int commentId);
+	// public void deleteCommentVote(int commentId, int userId);
 }
