@@ -511,4 +511,292 @@ public class Database implements DatabaseInterface {
 		// Also delete associated comment votes
 		// TODO: will implement once comment votes are implemented
 	}
+
+	public void saveFriendship(Friendship friendship) {
+		try {
+			if (friendship.getId() == -1) {
+				// Read first entry which is the next id
+				FileInputStream fileIn = new FileInputStream(FRIENDSHIP_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				int nextId = in.readInt();
+				in.close();
+
+				// update the friendship
+				friendship.setId(nextId);
+
+				// write the incremented id back to the file
+				FileOutputStream fileOut = new FileOutputStream(FRIENDSHIP_FILE);
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out.writeInt(nextId + 1);
+				out.close();
+
+				// append the friendship to the file
+				fileOut = new FileOutputStream(FRIENDSHIP_FILE, true);
+				out = new ObjectOutputStream(fileOut);
+				out.writeObject(friendship);
+				out.close();
+
+				return;
+			}
+
+			// Have to check if the friendship already exists
+			boolean friendshipExists = this.getFriendship(friendship.getId()) != null;
+			if (friendshipExists) {
+				// Update the friendship
+				FileInputStream fileIn = new FileInputStream(FRIENDSHIP_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+
+				FileOutputStream fileOut = new FileOutputStream(FRIENDSHIP_FILE + ".tmp");
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+				Friendship f;
+				while (true) {
+					try {
+						f = (Friendship) in.readObject();
+						if (f.getId() == friendship.getId()) {
+							f = friendship;
+						}
+						out.writeObject(f);
+					} catch (EOFException e) {
+						break;
+					}
+				}
+
+				in.close();
+				out.close();
+
+				// Replace the old file with the new one
+				File oldFile = new File(FRIENDSHIP_FILE);
+				File newFile = new File(FRIENDSHIP_FILE + ".tmp");
+				oldFile.delete();
+				newFile.renameTo(oldFile);
+				return;
+			}
+
+			// Append the friendship to the file
+			FileOutputStream fileOut = new FileOutputStream(FRIENDSHIP_FILE, true);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(friendship);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Friendship getFriendship(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(FRIENDSHIP_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Friendship f;
+			while (true) {
+				try {
+					f = (Friendship) in.readObject();
+					if (f.getId() == id) {
+						in.close();
+						return f;
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public ArrayList<User> getFriends(int userId) {
+		ArrayList<User> friends = new ArrayList<User>();
+		try {
+			FileInputStream fileIn = new FileInputStream(FRIENDSHIP_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Friendship f;
+			while (true) {
+				try {
+					f = (Friendship) in.readObject();
+					if (f.getUserId1() == userId) {
+						friends.add(this.getUser(f.getUserId2()));
+					} else if (f.getUserId2() == userId) {
+						friends.add(this.getUser(f.getUserId1()));
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return friends;
+	}
+
+	public void deleteFriendship(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(FRIENDSHIP_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			FileOutputStream fileOut = new FileOutputStream(FRIENDSHIP_FILE + ".tmp");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+			Friendship f;
+			while (true) {
+				try {
+					f = (Friendship) in.readObject();
+					if (f.getId() != id) {
+						out.writeObject(f);
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+			out.close();
+
+			// Replace the old file with the new one
+			File oldFile = new File(FRIENDSHIP_FILE);
+			File newFile = new File(FRIENDSHIP_FILE + ".tmp");
+			oldFile.delete();
+			newFile.renameTo(oldFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveBlocked(Blocked blocked) {
+		try {
+			if (blocked.getId() == -1) {
+				// Read first entry which is the next id
+				FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				int nextId = in.readInt();
+				in.close();
+
+				// update the blocked
+				blocked.setId(nextId);
+
+				// write the incremented id back to the file
+				FileOutputStream fileOut = new FileOutputStream(BLOCKED_FILE);
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out.writeInt(nextId + 1);
+				out.close();
+
+				// append the blocked to the file
+				fileOut = new FileOutputStream(BLOCKED_FILE, true);
+				out = new ObjectOutputStream(fileOut);
+				out.writeObject(blocked);
+				out.close();
+
+				return;
+			}
+
+			// Have to check if the blocked already exists
+			boolean blockedExists = this.getBlocked(blocked.getId()) != null;
+			if (blockedExists) {
+				// Update the blocked
+				FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+
+				FileOutputStream fileOut = new FileOutputStream(BLOCKED_FILE + ".tmp");
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+				Blocked b;
+				while (true) {
+					try {
+						b = (Blocked) in.readObject();
+						if (b.getId() == blocked.getId()) {
+							b = blocked;
+						}
+						out.writeObject(b);
+					} catch (EOFException e) {
+						break;
+					}
+				}
+
+				in.close();
+				out.close();
+
+				// Replace the old file with the new one
+				File oldFile = new File(BLOCKED_FILE);
+				File newFile = new File(BLOCKED_FILE + ".tmp");
+				oldFile.delete();
+				newFile.renameTo(oldFile);
+				return;
+			}
+
+			// Append the blocked to the file
+			FileOutputStream fileOut = new FileOutputStream(BLOCKED_FILE, true);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(blocked);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Blocked getBlocked(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			Blocked b;
+			while (true) {
+				try {
+					b = (Blocked) in.readObject();
+					if (b.getId() == id) {
+						in.close();
+						return b;
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void deleteBlocked(int id) {
+		try {
+			FileInputStream fileIn = new FileInputStream(BLOCKED_FILE);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			FileOutputStream fileOut = new FileOutputStream(BLOCKED_FILE + ".tmp");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+
+			Blocked b;
+			while (true) {
+				try {
+					b = (Blocked) in.readObject();
+					if (b.getId() != id) {
+						out.writeObject(b);
+					}
+				} catch (EOFException e) {
+					break;
+				}
+			}
+
+			in.close();
+			out.close();
+
+			// Replace the old file with the new one
+			File oldFile = new File(BLOCKED_FILE);
+			File newFile = new File(BLOCKED_FILE + ".tmp");
+			oldFile.delete();
+			newFile.renameTo(oldFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
