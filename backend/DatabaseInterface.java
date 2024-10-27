@@ -11,10 +11,33 @@ public interface DatabaseInterface {
 	public final static String POST_VOTE_FILE = "database/post_vote";
 	public final static String COMMENT_VOTE_FILE = "database/comment_vote";
 	
-
+	/**
+	 * Saves user to file. If the user has no id, it will be assigned one.
+	 * If the user has an id/already exists in the file, it will be updated.
+	 * 
+	 * @param user User to save
 	public void saveUser(User user);
+
+	/**
+	 * Gets user by id
+	 * 
+	 * @param id Id of user
+	 * @return User with the id
 	public User getUser(int id);
+
+	/**
+	 * Gets user by username
+	 * 
+	 * @param username Username of user
+	 * @return User with the username
 	public User getUser(String username);
+
+	/**
+	 * Tries to login with the given username and password
+	 * 
+	 * @param username Username to login with
+	 * @param password Password to login with
+	 * @return User if login was successful, null otherwise
 	public User tryLogin(String username, String password);
 
 	public void savePost(Post post);

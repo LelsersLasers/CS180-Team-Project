@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class Database implements DatabaseInterface {
 
-	// Saves user to file. If the user has no id, it will be assigned one.
-	// If the user has an id/already exists in the file, it will be updated.
 	public void saveUser(User user) {
 		try {
 			if (user.getId() == -1) {
