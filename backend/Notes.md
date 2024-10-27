@@ -10,16 +10,18 @@
 	- [blocked]
 - Post:
 	- id
-	- [author]
+	- [user]
 	- picture (base64 string)
+	- text
+	- date
 	- [upvotes]
 	- [downvotes]
 	- [comments]
 - Comment:
 	- id
-	- author
+	- [user]
 	- [post]
-	- content
+	- text
 	- [upvotes]
 	- [downvotes]
 
@@ -32,24 +34,30 @@
 	- picture: String (base64)
 - Post:
 	- id: int
-	- author: User.id
+	- userId: User.id
 	- picture: String (base64)
+	- text: String
+	- date: String
 - Comment:
 	- id: int
-	- author: User.id
-	- post: Post.id
-	- content: String
+	- userId: User.id
+	- postId: Post.id
+	- text: String
 - Friendship:
-	- user1: User.id
-	- user2: User.id
-- Block:
-	- blocker: User.id
-	- blocked: User.id
+	- id: int
+	- user1Id: User.id
+	- user2Id: User.id
+- Blocked:
+	- id: int
+	- blockerId: User.id
+	- blockedId: User.id
 - PostVote:
-	- user: User.id
-	- post: Post.id
+	- id: int
+	- userId: User.id
+	- postId: Post.id
 	- vote: int (1 for upvote, -1 for downvote)
 - CommentVote:
-	- user: User.id
-	- comment: Comment.id
+	- id: int
+	- userId: User.id
+	- commentId: Comment.id
 	- vote: int (1 for upvote, -1 for downvote)
